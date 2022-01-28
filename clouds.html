@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+    <meta charset="UTF-8">
+    <head>
+        <title>Clouds!</title>
+        <style>
+            canvas {
+                background-color: lightblue;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+            }
+
+            body {
+                margin: 0;
+                background-color: blue;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <canvas id="cvs"></canvas>
+    </body>
+
+    <script type="text/javascript">
+        console.log("Hello, World!")
+
+        // Get HTML objects
+        const canvas = document.getElementById('cvs');
+        const ctx = canvas.getContext('2d');
+        const dpi = window.devicePixelRatio;
+
+        // Perform a DPI fix for drawing
+        function DPIFix() {
+            //create a style object that returns width and height  
+            let style = {
+                height() {
+                return + getComputedStyle(canvas).getPropertyValue('height').slice(0,-2);
+                },
+                width() {
+                return + getComputedStyle(canvas).getPropertyValue('width').slice(0,-2);
+                }
+            }//set the correct attributes for a crystal clear image!  
+            cw = style.width() * dpi;
+            ch = style.height() * dpi;
+            canvas.setAttribute('width', cw);
+            canvas.setAttribute('height', ch);
+        }
+
+        DPIFix()
+
+        // Declare metavars
+        let grid = []; // Base grid to draw each update
+        let gridwidth = 100; // Width of grid
+        let gridheight = 100; // Height of grid
+        let clouds = [{x:0, y: 20, cells: [{x:0, y:0}, {x:1, y:1}, {x:0, y:2}]}]; // Hold all clouds currently in view
+        let updateWait = 1000; // Time to wait between screen updates, ms
+        let barWait = 10; // Time to wait between updating different bars
+
+        // Set up cell size for grid on canvas
+        // Let it overflow if needed rather than underflow
+        let cellX = Math.ceil(cw/gridwidth);
+        let cellY = Math.ceil(ch/gridheight);
+
+        // Set a 2D array for the grid
+        grid = new Array(gridwidth)
+        for (let x = 0; x < gridwidth; x++){
+            grid[x] = new Array(gridheight)
+            for (let y = 0; y < gridheight; y++){
+                grid[x][y] = {x : x * cellX, y : y * cellY};
+            }
+        }
+
+        // Keep a clean copy
+        gridClean = JSON.parse(JSON.stringify(grid));
+
+        // Reset the base grid
+        function resetGrid(){
+            grid = JSON.parse(JSON.stringify(gridClean));
+        }
+
+
+        // Draw gradient background based on time
+        function updateBackground(){
+            console.log("TODO")
+        }
+
+        // Generate cloud shapes
+        function makeCloud(){
+            console.log("TODO")
+        }
+
+        // Update cloud position
+        function updateClouds(){
+            // Move all clouds one pixel right on the grid
+            // TODO: Choose different directions
+            for (const cl of clouds){
+                cl.x += 1;
+            }
+        }
+
+        // Draw clouds to canvas
+        function drawClouds(){
+            // Clear the grid
+            resetGrid();
+            ctx.fillStyle = 'black';
+            // Get each cloud cell
+            for (const cl of clouds){
+                for (const cell of cl.cells){
+                    // Draw the given cell
+                    ctx.fillRect(grid[cl.x + cell.x][cl.y + cell.y].x, grid[cl.x + cell.x][cl.y + cell.y].y, cellX, cellY);
+                }
+            }
+        }
+
+        // Function to repeatedly draw new cloud positions
+        function draw() {
+            // Update canvas size dynamically with window size
+            ctx.canvas.width  = window.innerWidth;
+            ctx.canvas.height = window.innerHeight;
+            DPIFix();
+            // Clear screen
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Update cloud position
+            updateClouds();
+            // Draw new clouds
+            drawClouds();
+        }
+
+        // Loop through drawing update
+        window.requestAnimationFrame = window.requestAnimationFrame
+            || window.mozRequestAnimationFrame
+            || window.webkitRequestAnimationFrame
+            || window.msRequestAnimationFrame
+            || function(f){return setTimeout(f, 1000/60)}
+
+        //window.requestAnimationFrame(draw())
+        setInterval(function () {
+            requestAnimationFrame(draw);
+        }, updateWait);
+    </script>
+    
+</html>
